@@ -7,8 +7,11 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface BabyCornXMLAnnotation {
+public @interface BabyCornXMLField {
 
 	String xPath();
-    String name() default "[unassigned]"; ;
+	String mapKey() default "[unassigned]";
+	String mapValue() default "[unassigned]";
+	String listValue() default "[unassigned]";
+    String name() default "[unassigned]";
 }
