@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -24,30 +25,30 @@ import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory.FactoryType;
 public class BabyCornXML {
 	
 	private String xmlPath;
-	private Object object;
 	private BabyCornXMLReader babyCornXMLReader;
 	private boolean isTracesEnabled = false;
 	
 	public BabyCornXML(String xmlPath,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		this.xmlPath= xmlPath;
-		this.object= object;
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
-		buildAnnotatedObject();
+		buildAnnotatedObject(object);
 	}
 	
 	public BabyCornXML(String xmlPath,Object object,boolean enableTraces) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		isTracesEnabled=enableTraces;
 		this.xmlPath= xmlPath;
-		this.object= object;
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
-		buildAnnotatedObject();
+		buildAnnotatedObject(object);
 	}
-	
-	public void buildAnnotatedObject() throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
+	public void buildAnnotatedObject(Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
+	{
+		buildAnnotatedObject(this.babyCornXMLReader.getDocumentRoot(),object);
+	}
+	public void buildAnnotatedObject(Node node,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
 	{
 		printTraces("Building annotated object: "+object.getClass());
 		Field[] fields = object.getClass().getDeclaredFields();
@@ -62,37 +63,49 @@ public class BabyCornXML {
 				printTraces("xPath: "+babyCornXMLField.xPath()+" Name: "+babyCornXMLField.name());
 				
 				if(field.getType().equals(String.class)) {
-					processStringField(field,babyCornXMLField);
+					processStringField(node,object,field,babyCornXMLField);
 				}else if(field.getType().equals(double.class)) {
-					processDoubleField(field,babyCornXMLField);
+					processDoubleField(node,object,field,babyCornXMLField);
 				
 				}else if(field.getType().equals(Map.class) || field.getType().equals(HashMap.class)) {
-					processMapField(field,babyCornXMLField);
+					processMapField(node,object,field,babyCornXMLField);
 				}
 				else if(field.getType().equals(List.class) || field.getType().equals(ArrayList.class)) {
-					processListField(field,babyCornXMLField);
+					processListField(node,object,field,babyCornXMLField);
+				}else
+				{
+					System.out.println("inside "+field.get(object));
+					processObjectField(node,object,field,babyCornXMLField);
 				}
 			}
 		}
 	}
 	
-	private void processStringField(Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	private void processObjectField(Node node,Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
+		
+		Node subNode = this.babyCornXMLReader.evaluateXPathToNode(node,babyCornXMLField.xPath());
+		Object subObject= currentField.get(object);
+		printTraces("Procesing object field on "+subObject.getClass()+" Node name: "+subNode.getNodeName()+" XPath: "+babyCornXMLField.xPath());
+		buildAnnotatedObject(subNode,subObject);
+	}
+
+	private void processStringField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		String stringValue = this.babyCornXMLReader.evaluateXPathToString(babyCornXMLField.xPath());
+		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+stringValue);
 		currentField.set(object, stringValue);
 	}
-	private void processDoubleField(Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToDouble(babyCornXMLField.xPath());
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToDouble(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+doubleValue);
 		currentField.set(object, doubleValue);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void processMapField(Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	private void processMapField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(babyCornXMLField.xPath());
+		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
 		
 		Map map = new HashMap();
 		String key = babyCornXMLField.mapKey();
@@ -101,23 +114,23 @@ public class BabyCornXML {
 		String valueValue="";
 		for(int i = 0; i < nodeList.getLength(); i++) {                
                 
-			Node node = nodeList.item(i);
-			String textContent =node.getTextContent();
+			Node childNode = nodeList.item(i);
+			String textContent =childNode.getTextContent();
 			keyValue = key.trim().equalsIgnoreCase("text()")?textContent:"";
 			valueValue = value.trim().equalsIgnoreCase("text()")?textContent:"";
 			
-            if (node.hasAttributes()) {
+            if (childNode.hasAttributes()) {
             	
             	if(key.trim().startsWith("@"))
             	{
-            		Attr attr = (Attr) node.getAttributes().getNamedItem(key.replace("@", ""));
+            		Attr attr = (Attr) childNode.getAttributes().getNamedItem(key.replace("@", ""));
                     if (attr != null) {
                     	keyValue = attr.getValue();   
                     }
                 }
             	if(value.trim().startsWith("@"))
             	{
-            		Attr attr = (Attr) node.getAttributes().getNamedItem(value.replace("@", ""));
+            		Attr attr = (Attr) childNode.getAttributes().getNamedItem(value.replace("@", ""));
                     if (attr != null) {
                     	valueValue= attr.getValue();   
                     }
@@ -131,9 +144,9 @@ public class BabyCornXML {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void processListField(Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	private void processListField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(babyCornXMLField.xPath());
+		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
 		
 		List list = new ArrayList();
 		String value = babyCornXMLField.listValue();
@@ -141,15 +154,15 @@ public class BabyCornXML {
 		String valueValue="";
 		for(int i = 0; i < nodeList.getLength(); i++) {                
                 
-			Node node = nodeList.item(i);
-			String textContent =node.getTextContent();
+			Node childNode = nodeList.item(i);
+			String textContent =childNode.getTextContent();
 			valueValue = value.trim().equalsIgnoreCase("text()")?textContent:"";
 			
-            if (node.hasAttributes()) {
+            if (childNode.hasAttributes()) {
             	
             	if(value.trim().startsWith("@"))
             	{
-            		Attr attr = (Attr) node.getAttributes().getNamedItem(value.replace("@", ""));
+            		Attr attr = (Attr) childNode.getAttributes().getNamedItem(value.replace("@", ""));
                     if (attr != null) {
                     	valueValue = attr.getValue();   
                     }
