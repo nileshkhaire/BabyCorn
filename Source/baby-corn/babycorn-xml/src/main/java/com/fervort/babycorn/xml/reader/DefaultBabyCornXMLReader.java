@@ -117,5 +117,21 @@ class DefaultBabyCornXMLReader implements BabyCornXMLReader {
 		return doubleValue;
 	}
 	
+	@Override
+	public int evaluateXPathToInteger(String inputPath) throws XPathExpressionException
+	{
+		XPathExpression expr =  xPath.compile(inputPath);
+		double doubleValue =  (double) expr.evaluate(doc, XPathConstants.NUMBER);
+		return (int)doubleValue;
+	}
+	
+	@Override
+	public int evaluateXPathToInteger(Object object,String inputPath) throws XPathExpressionException
+	{
+		XPathExpression expr =  xPath.compile(inputPath);
+        double doubleValue =  (double) expr.evaluate(object, XPathConstants.NUMBER);
+		return (int)doubleValue;
+	}
+	
 
 }

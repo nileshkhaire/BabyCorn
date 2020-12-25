@@ -2,8 +2,13 @@ package com.fervort.babycorn.xml;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,29 +69,85 @@ public class BabyCornXML {
 				
 				if(field.getType().equals(String.class)) {
 					processStringField(node,object,field,babyCornXMLField);
-				}else if(field.getType().equals(double.class)) {
+					
+				}else if(field.getType().equals(int.class) || field.getType().equals(Integer.class)) {
+					processIntegerField(node,object,field,babyCornXMLField);
+				
+				}else if(field.getType().equals(double.class) || field.getType().equals(Double.class)) {
 					processDoubleField(node,object,field,babyCornXMLField);
 				
 				}else if(field.getType().equals(Map.class) || field.getType().equals(HashMap.class)) {
 					processMapField(node,object,field,babyCornXMLField);
 				}
 				else if(field.getType().equals(List.class) || field.getType().equals(ArrayList.class)) {
-					processListField(node,object,field,babyCornXMLField);
-				}else
+					
+					if(isListOfObjects(field))
+					{
+						processListOfObjectsField(node,object,field,babyCornXMLField);
+					}
+					else
+					{
+						processListField(node,object,field,babyCornXMLField);
+					}
+				}else if(!isBasicType(field.getType()))
 				{
-					System.out.println("inside "+field.get(object));
 					processObjectField(node,object,field,babyCornXMLField);
 				}
 			}
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void processListOfObjectsField(Node node,Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
+		
+		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
+		Object listObject= currentField.get(object);
+		printTraces("Procesing List of object field on "+listObject.getClass()+" Node name: "+node.getNodeName()+" XPath: "+babyCornXMLField.xPath());
+		Type[] types = getFieldParameterizedType(currentField);
+		if(types!=null)
+		{
+			printTraces("ParameterizedType Found "+types[0]);
+			Class<?> clazz =(Class<?>) types[0];
+			
+			for(int i=0;i<nodeList.getLength();i++)
+			{
+				Object subObject;
+				try {
+					subObject = clazz.getConstructor().newInstance();
+					Node subNode =nodeList.item(i);
+					buildAnnotatedObject(subNode,subObject);
+					
+					printTraces("Created Object of "+subObject);
+					
+					if(clazz.getMethod("toString").getDeclaringClass().equals(Object.class))
+					{
+						printTraces("You can implement toString() method to see all set fields of the class "+clazz); 
+					}
+					
+					@SuppressWarnings("rawtypes")
+					List list =(List)listObject;
+					list.add(subObject);
+					printTraces("Added object in the list");
+					
+				} catch (InstantiationException | NoSuchMethodException | SecurityException e) {
+					printTraces("InstantiationException : "+e.getLocalizedMessage());
+				} catch (InvocationTargetException e) {
+					printTraces("InvocationTargetException : "+e.getLocalizedMessage());
+				}
+			}
+		}
+			
+	}
+
 	private void processObjectField(Node node,Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		
 		Node subNode = this.babyCornXMLReader.evaluateXPathToNode(node,babyCornXMLField.xPath());
 		Object subObject= currentField.get(object);
-		printTraces("Procesing object field on "+subObject.getClass()+" Node name: "+subNode.getNodeName()+" XPath: "+babyCornXMLField.xPath());
-		buildAnnotatedObject(subNode,subObject);
+		if(subObject!=null)
+		{
+			printTraces("Procesing object field on "+subObject.getClass()+" Node name: "+subNode.getNodeName()+" XPath: "+babyCornXMLField.xPath());
+			buildAnnotatedObject(subNode,subObject);
+		}
 	}
 
 	private void processStringField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
@@ -98,8 +159,14 @@ public class BabyCornXML {
 	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
 		Double doubleValue = this.babyCornXMLReader.evaluateXPathToDouble(node,babyCornXMLField.xPath());
-		printTraces("Setting string on "+currentField.getName()+" Value: "+doubleValue);
+		printTraces("Setting double on "+currentField.getName()+" Value: "+doubleValue);
 		currentField.set(object, doubleValue);
+	}
+	private void processIntegerField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	{
+		Integer integerValue = this.babyCornXMLReader.evaluateXPathToInteger(node,babyCornXMLField.xPath());
+		printTraces("Setting integer on "+currentField.getName()+" Value: "+integerValue);
+		currentField.set(object, integerValue);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -174,6 +241,64 @@ public class BabyCornXML {
 		}
 		currentField.set(object, list);
 	}
+	
+	public Type[] getFieldParameterizedType(Field field)
+	{
+		Type type = field.getGenericType();
+		
+		if (type instanceof ParameterizedType) {
+			
+	        ParameterizedType parameterizedType = (ParameterizedType)type;
+	        printTraces("Raw type is: " + parameterizedType.getRawType());
+	        Type[] types = parameterizedType.getActualTypeArguments();
+	        printTraces("parameterizedType: "+Arrays.toString(types));
+	        return types;
+		}
+		return null;
+	}
+	
+	public boolean isBasicType(Type type)
+	{
+		if(type.equals(String.class)
+				||  type.equals(Integer.class) || type.equals(int.class)
+        		|| 	type.equals(Boolean.class) || type.equals(boolean.class)
+        		|| 	type.equals(Double.class) || type.equals(double.class)
+        		|| 	type.equals(Character.class) || type.equals(char.class)
+        		|| 	type.equals(Short.class) || type.equals(short.class)
+        		|| 	type.equals(Long.class) || type.equals(long.class)
+        		|| 	type.equals(Float.class) || type.equals(float.class)
+        		|| 	type.equals(Byte.class) || type.equals(byte.class)
+        )
+        { return true;}
+		return false;
+	}
+	// TODO: Improve this function
+	public boolean isListOfObjects(Field field)
+	{
+		Type type = field.getGenericType();
+		if (type instanceof ParameterizedType) {
+	        ParameterizedType parameterizedType = (ParameterizedType)type;
+	        printTraces("Raw type is: " + parameterizedType.getRawType());
+	        
+	        if(field.getType().equals(List.class) || field.getType().equals(ArrayList.class))
+	        {
+	        	Type argType = parameterizedType.getActualTypeArguments()[0]; // list will have only one argument
+	        	if(isBasicType(argType))
+	        	{
+	        		printTraces("Argument Types: "+argType);
+	        		return false;
+	        	}
+	        	
+        		printTraces("Argument Types: "+argType);
+        		return true;
+	        }
+	        return false;
+	    } else {
+	        System.out.println("Type: " + field.getType());
+	        return false;
+	    }
+	}
+	
 	public void enableTraces()
 	{
 		this.isTracesEnabled= true;

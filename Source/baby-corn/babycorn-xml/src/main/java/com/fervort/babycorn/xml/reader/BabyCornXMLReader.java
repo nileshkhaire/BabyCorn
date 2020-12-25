@@ -25,4 +25,6 @@ public interface BabyCornXMLReader {
 	public Boolean evaluateXPathToBoolean(Object object,String inputPath) throws XPathExpressionException;
 	public Double evaluateXPathToDouble(String inputPath) throws XPathExpressionException;
 	public Double evaluateXPathToDouble(Object object,String inputPath) throws XPathExpressionException;
+	public int evaluateXPathToInteger(String inputPath) throws XPathExpressionException;
+	public int evaluateXPathToInteger(Object object, String inputPath) throws XPathExpressionException;
 }
