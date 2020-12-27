@@ -1,3 +1,21 @@
+/***
+
+Copyright [2020] [Nilesh Khaire]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
 package com.fervort.babycorn.xml;
 
 import java.io.IOException;
@@ -69,14 +87,26 @@ public class BabyCornXML {
 				
 				if(field.getType().equals(String.class)) {
 					processStringField(node,object,field,babyCornXMLField);
-					
 				}else if(field.getType().equals(int.class) || field.getType().equals(Integer.class)) {
 					processIntegerField(node,object,field,babyCornXMLField);
-				
 				}else if(field.getType().equals(double.class) || field.getType().equals(Double.class)) {
 					processDoubleField(node,object,field,babyCornXMLField);
+				}else if(field.getType().equals(boolean.class) || field.getType().equals(Boolean.class)) {
+					processBooleanField(node,object,field,babyCornXMLField);
+				}else if(field.getType().equals(char.class) || field.getType().equals(Character.class)) {
+					processCharacterField(node,object,field,babyCornXMLField);
+				}else if(field.getType().equals(short.class) || field.getType().equals(Short.class)) {
+					processShortField(node,object,field,babyCornXMLField);
+				}else if(field.getType().equals(long.class) || field.getType().equals(Long.class)) {
+					processLongField(node,object,field,babyCornXMLField);
+				}else if(field.getType().equals(float.class) || field.getType().equals(Float.class)) {
+					processFloatField(node,object,field,babyCornXMLField);
+				}
+				/*else if(field.getType().equals(byte.class) || field.getType().equals(Byte.class)) {
+					//processIntegerField(node,object,field,babyCornXMLField);
 				
-				}else if(field.getType().equals(Map.class) || field.getType().equals(HashMap.class)) {
+				}*/
+				else if(field.getType().equals(Map.class) || field.getType().equals(HashMap.class)) {
 					processMapField(node,object,field,babyCornXMLField);
 				}
 				else if(field.getType().equals(List.class) || field.getType().equals(ArrayList.class)) {
@@ -149,7 +179,6 @@ public class BabyCornXML {
 			buildAnnotatedObject(subNode,subObject);
 		}
 	}
-
 	private void processStringField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
 		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
@@ -158,15 +187,71 @@ public class BabyCornXML {
 	}
 	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToDouble(node,babyCornXMLField.xPath());
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting double on "+currentField.getName()+" Value: "+doubleValue);
-		currentField.set(object, doubleValue);
+		if(!doubleValue.isNaN())
+		{
+			currentField.set(object, doubleValue);
+		}
 	}
 	private void processIntegerField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		Integer integerValue = this.babyCornXMLReader.evaluateXPathToInteger(node,babyCornXMLField.xPath());
-		printTraces("Setting integer on "+currentField.getName()+" Value: "+integerValue);
-		currentField.set(object, integerValue);
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		printTraces("Setting integer on "+currentField.getName()+" Value: "+doubleValue);
+		if(!doubleValue.isNaN())
+		{
+			int intValue = doubleValue.intValue();
+			currentField.set(object, intValue);
+		}
+	}
+	private void processShortField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		printTraces("Setting short on "+currentField.getName()+" Value: "+doubleValue);
+		if(!doubleValue.isNaN())
+		{
+			short shortValue = doubleValue.shortValue();
+			currentField.set(object, shortValue);
+		}
+	}
+	private void processFloatField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		printTraces("Setting float on "+currentField.getName()+" Value: "+doubleValue);
+		if(!doubleValue.isNaN())
+		{
+			float floatValue = doubleValue.floatValue();
+			currentField.set(object, floatValue);
+		}
+	}
+	private void processLongField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
+		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		printTraces("Setting Long on "+currentField.getName()+" Value: "+doubleValue);
+		if(!doubleValue.isNaN())
+		{
+			long longValue = doubleValue.longValue();
+			currentField.set(object, longValue);
+		}
+	}
+	private void processBooleanField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	{
+		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
+		printTraces("Setting boolean on "+currentField.getName()+" Value: "+stringValue);
+		boolean boolValue = false;
+		if(stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("yes"))
+		{
+			boolValue = true;
+		}
+		currentField.set(object, boolValue);
+	}
+	private void processCharacterField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
+	{
+		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
+		printTraces("Setting character on "+currentField.getName()+" Value: "+stringValue);
+		char charValue = 0 ;
+		if(stringValue.length()>1)
+		{
+			charValue = stringValue.charAt(0);
+		}
+		currentField.set(object, charValue);
 	}
 	
 	@SuppressWarnings("unchecked")
