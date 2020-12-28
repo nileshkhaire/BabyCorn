@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<students>
+	<student>
+		<name>Foo Bar</name>
+		<rollno>11</rollno>
+		<division>A</division>
+		<lastYearGrade>78.77</lastYearGrade>
+		<inTopTen>yes</inTopTen>
+		<secretKeyNumber>922337203685477</secretKeyNumber>
+		<studentWeight>63.9873333</studentWeight>
+		<address postcode="900111" city="California"/>
+		<hobbies>
+			<hobby>Singing</hobby>
+			<hobby>Reading</hobby>
+			<hobby>Yoga</hobby>
+		</hobbies>
+		<subjects>
+			<subject name="Science" teacherName="Abc Pqr"/>
+			<subject name="Mathematics" teacherName="Lmn Opq"/>
+			<subject name="English" teacherName="Def Xyz"/>
+		</subjects>
+		<projects>
+			<project id="101">Painting</project>
+			<project id="102">calligraphy</project>
+		</projects>
+	</student>
+</students>	

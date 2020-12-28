@@ -247,7 +247,7 @@ public class BabyCornXML {
 		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting character on "+currentField.getName()+" Value: "+stringValue);
 		char charValue = 0 ;
-		if(stringValue.length()>1)
+		if(stringValue.length()>=1)
 		{
 			charValue = stringValue.charAt(0);
 		}
