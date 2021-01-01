@@ -88,11 +88,17 @@ public class Students {
 ### Create an object of a java field class you have created in the last step and pass it to BabyCornXML constructor :
 
 ```java
-		Students students = new Students();
-		BabyCornXML babyCornXML = new BabyCornXML(filePath,students);
+
+public class StudentTest {
+
+	public static void main(String[] args) throws Exception {
 		
-		System.out.println("Student name : "+students.name);
-				
+		Students students = new Students();
+		
+		BabyCornXML babyCornXML = new BabyCornXML("D:\\Nilesh\\Work\\github\\BabyCorn\\repo\\BabyCorn\\Source\\baby-corn\\babycorn-xml\\src\\test\\resources\\Students.xml",students);
+		
+		System.out.println("Name: "+students.name);
+		
 		System.out.println("Roll Number "+students.rollNumber);
 		
 		System.out.println("Division "+students.division);
@@ -102,10 +108,16 @@ public class Students {
 		System.out.println("last year grade "+students.lastYearGradeofStudent);
 		
 		System.out.println("Weight "+students.weight);
-		
+	
 		System.out.println("SecretKey "+students.secretKeyNumber);
-		
+
 		System.out.println("Hobbies "+students.hobbies);
 		
 		System.out.println("Subjects "+students.subjects);
+
+	}
+
+}
+
+
 ```

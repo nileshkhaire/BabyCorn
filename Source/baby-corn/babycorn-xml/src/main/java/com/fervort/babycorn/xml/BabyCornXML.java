@@ -379,7 +379,7 @@ public class BabyCornXML {
 	        }
 	        return false;
 	    } else {
-	        System.out.println("Type: " + field.getType());
+	        printTraces("Type: " + field.getType());
 	        return false;
 	    }
 	}
