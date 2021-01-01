@@ -95,7 +95,7 @@ public class StudentTest {
 		
 		Students students = new Students();
 		
-		BabyCornXML babyCornXML = new BabyCornXML("D:\\Nilesh\\Work\\github\\BabyCorn\\repo\\BabyCorn\\Source\\baby-corn\\babycorn-xml\\src\\test\\resources\\Students.xml",students);
+		BabyCornXML babyCornXML = new BabyCornXML("Students.xml",students);
 		
 		System.out.println("Name: "+students.name);
 		
