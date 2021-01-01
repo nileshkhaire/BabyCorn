@@ -121,3 +121,17 @@ public class StudentTest {
 
 
 ```
+
+### Output :
+
+```bash
+Name: Foo Bar
+Roll Number 11
+Division A
+In Top 10 true
+last year grade 78.77
+Weight 63.9873333
+SecretKey 922337203685477
+Hobbies [Singing, Reading, Yoga]
+Subjects {English=Def Xyz, Science=Abc Pqr, Mathematics=Lmn Opq}
+```
