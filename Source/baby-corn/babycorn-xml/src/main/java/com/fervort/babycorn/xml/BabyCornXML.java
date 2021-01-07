@@ -31,7 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Attr;
@@ -47,12 +50,10 @@ import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory.FactoryType;
 
 public class BabyCornXML {
 	
-	private String xmlPath;
 	private BabyCornXMLReader babyCornXMLReader;
 	private boolean isTracesEnabled = false;
 	
 	public BabyCornXML(String xmlPath,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-		this.xmlPath= xmlPath;
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
@@ -61,15 +62,23 @@ public class BabyCornXML {
 	
 	public BabyCornXML(String xmlPath,Object object,boolean enableTraces) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		isTracesEnabled=enableTraces;
-		this.xmlPath= xmlPath;
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
 		buildAnnotatedObject(object);
 	}
+	
+	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader,boolean enableTraces) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+		isTracesEnabled=enableTraces;
+		this.babyCornXMLReader = babyCornXMLReader;
+		this.babyCornXMLReader.initParser(xmlPath);
+		this.babyCornXMLReader.initXPath();
+		buildAnnotatedObject(object);
+	}
+		
 	private void buildAnnotatedObject(Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
 	{
-		buildAnnotatedObject(this.babyCornXMLReader.getDocumentRoot(),object);
+		buildAnnotatedObject(getDocumentRoot(),object);
 	}
 	private void buildAnnotatedObject(Node node,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
 	{
@@ -130,7 +139,7 @@ public class BabyCornXML {
 	@SuppressWarnings("unchecked")
 	private void processListOfObjectsField(Node node,Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		
-		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
+		NodeList nodeList = evaluateXPathToNodeList(node,babyCornXMLField.xPath());
 		Object listObject= currentField.get(object);
 		printTraces("Procesing List of object field on "+listObject.getClass()+" Node name: "+node.getNodeName()+" XPath: "+babyCornXMLField.xPath());
 		Type[] types = getFieldParameterizedType(currentField);
@@ -171,7 +180,7 @@ public class BabyCornXML {
 
 	private void processObjectField(Node node,Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		
-		Node subNode = this.babyCornXMLReader.evaluateXPathToNode(node,babyCornXMLField.xPath());
+		Node subNode = evaluateXPathToNode(node,babyCornXMLField.xPath());
 		Object subObject= currentField.get(object);
 		if(subObject!=null)
 		{
@@ -181,13 +190,13 @@ public class BabyCornXML {
 	}
 	private void processStringField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
+		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+stringValue);
 		currentField.set(object, stringValue);
 	}
 	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting double on "+currentField.getName()+" Value: "+doubleValue);
 		if(!doubleValue.isNaN())
 		{
@@ -196,7 +205,7 @@ public class BabyCornXML {
 	}
 	private void processIntegerField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting integer on "+currentField.getName()+" Value: "+doubleValue);
 		if(!doubleValue.isNaN())
 		{
@@ -205,7 +214,7 @@ public class BabyCornXML {
 		}
 	}
 	private void processShortField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting short on "+currentField.getName()+" Value: "+doubleValue);
 		if(!doubleValue.isNaN())
 		{
@@ -214,7 +223,7 @@ public class BabyCornXML {
 		}
 	}
 	private void processFloatField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting float on "+currentField.getName()+" Value: "+doubleValue);
 		if(!doubleValue.isNaN())
 		{
@@ -223,7 +232,7 @@ public class BabyCornXML {
 		}
 	}
 	private void processLongField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
-		Double doubleValue = this.babyCornXMLReader.evaluateXPathToNumber(node,babyCornXMLField.xPath());
+		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting Long on "+currentField.getName()+" Value: "+doubleValue);
 		if(!doubleValue.isNaN())
 		{
@@ -233,7 +242,7 @@ public class BabyCornXML {
 	}
 	private void processBooleanField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
+		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting boolean on "+currentField.getName()+" Value: "+stringValue);
 		boolean boolValue = false;
 		if(stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("yes"))
@@ -244,7 +253,7 @@ public class BabyCornXML {
 	}
 	private void processCharacterField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		String stringValue = this.babyCornXMLReader.evaluateXPathToString(node,babyCornXMLField.xPath());
+		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting character on "+currentField.getName()+" Value: "+stringValue);
 		char charValue = 0 ;
 		if(stringValue.length()>=1)
@@ -257,7 +266,7 @@ public class BabyCornXML {
 	@SuppressWarnings("unchecked")
 	private void processMapField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
+		NodeList nodeList = evaluateXPathToNodeList(node,babyCornXMLField.xPath());
 		
 		Map map = new HashMap();
 		String key = babyCornXMLField.mapKey();
@@ -298,7 +307,7 @@ public class BabyCornXML {
 	@SuppressWarnings("unchecked")
 	private void processListField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
-		NodeList nodeList = this.babyCornXMLReader.evaluateXPathToNodeList(node,babyCornXMLField.xPath());
+		NodeList nodeList = evaluateXPathToNodeList(node,babyCornXMLField.xPath());
 		
 		List list = new ArrayList();
 		String value = babyCornXMLField.listValue();
@@ -394,5 +403,62 @@ public class BabyCornXML {
 		if(isTracesEnabled)
 			System.out.println("TRACE: "+string);
 	}
-
+	
+	/***
+	 * Exposed methods for user
+	 */
+	public Document getDocumentRoot()
+	{
+		return this.babyCornXMLReader.getDocumentRoot();
+	}
+	
+	public Object evaluateXPath(String inputPath,QName qName) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPath(inputPath,qName);
+	}
+	
+	public Object evaluateXPath(Object object,String inputPath,QName qName) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPath(object, inputPath,qName);
+	}
+	
+	public String evaluateXPathToString(String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToString(inputPath);
+	}
+	
+	public String evaluateXPathToString(Object object,String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToString(object, inputPath);
+	}
+	
+	public NodeList evaluateXPathToNodeList(String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNodeList(inputPath);
+	}
+	
+	public NodeList evaluateXPathToNodeList(Object object,String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNodeList(object, inputPath);
+	}
+	
+	public Node evaluateXPathToNode(String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNode(inputPath);
+	}
+	
+	public Node evaluateXPathToNode(Object object,String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNode(object, inputPath);
+	}
+	
+	public Double evaluateXPathToNumber(String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNumber(inputPath);
+	}
+	
+	public Double evaluateXPathToNumber(Object object,String inputPath) throws XPathExpressionException
+	{
+		return this.babyCornXMLReader.evaluateXPathToNumber(object, inputPath);
+	}
 }

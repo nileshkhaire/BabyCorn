@@ -20,6 +20,7 @@ package com.fervort.babycorn.xml.reader;
 
 import java.io.IOException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,8 +54,23 @@ class DefaultBabyCornXMLReader implements BabyCornXMLReader {
         xPath = xpathFactory.newXPath();		
 	}
 	
+	@Override
 	public Document getDocumentRoot() {
 		return this.doc;
+	}
+	
+	@Override
+	public Object evaluateXPath(String inputPath,QName qName) throws XPathExpressionException
+	{
+		XPathExpression expr =  xPath.compile(inputPath);
+        return expr.evaluate(doc, qName);
+	}
+	
+	@Override
+	public Object evaluateXPath(Object object,String inputPath,QName qName) throws XPathExpressionException
+	{
+		XPathExpression expr =  xPath.compile(inputPath);
+        return expr.evaluate(object, qName);
 	}
 	
 	@Override
