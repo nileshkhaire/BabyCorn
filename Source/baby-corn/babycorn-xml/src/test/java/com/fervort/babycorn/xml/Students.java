@@ -35,4 +35,8 @@ public class Students {
 	
 	@BabyCornXMLField(xPath = "students/student/subjects/subject" ,mapKey = "@name",mapValue = "@teacherName")
 	Map<String,String> subjects = new HashMap();
+	
+	// Static test
+	@BabyCornXMLField(xPath = "students/student/name")
+	static String nameStatic;
 }

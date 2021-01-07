@@ -67,11 +67,11 @@ public class BabyCornXML {
 		this.babyCornXMLReader.initXPath();
 		buildAnnotatedObject(object);
 	}
-	public void buildAnnotatedObject(Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
+	private void buildAnnotatedObject(Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
 	{
 		buildAnnotatedObject(this.babyCornXMLReader.getDocumentRoot(),object);
 	}
-	public void buildAnnotatedObject(Node node,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
+	private void buildAnnotatedObject(Node node,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException
 	{
 		printTraces("Building annotated object: "+object.getClass());
 		Field[] fields = object.getClass().getDeclaredFields();
@@ -327,7 +327,7 @@ public class BabyCornXML {
 		currentField.set(object, list);
 	}
 	
-	public Type[] getFieldParameterizedType(Field field)
+	private Type[] getFieldParameterizedType(Field field)
 	{
 		Type type = field.getGenericType();
 		
@@ -342,7 +342,7 @@ public class BabyCornXML {
 		return null;
 	}
 	
-	public boolean isBasicType(Type type)
+	private boolean isBasicType(Type type)
 	{
 		if(type.equals(String.class)
 				||  type.equals(Integer.class) || type.equals(int.class)
@@ -358,7 +358,7 @@ public class BabyCornXML {
 		return false;
 	}
 	// TODO: Improve this function
-	public boolean isListOfObjects(Field field)
+	private boolean isListOfObjects(Field field)
 	{
 		Type type = field.getGenericType();
 		if (type instanceof ParameterizedType) {
@@ -384,12 +384,12 @@ public class BabyCornXML {
 	    }
 	}
 	
-	public void enableTraces()
+	private void enableTraces()
 	{
 		this.isTracesEnabled= true;
 	}
 
-	void printTraces(String string)
+	private void printTraces(String string)
 	{
 		if(isTracesEnabled)
 			System.out.println("TRACE: "+string);

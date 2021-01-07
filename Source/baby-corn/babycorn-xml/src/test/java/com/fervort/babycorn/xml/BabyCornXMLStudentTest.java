@@ -71,6 +71,10 @@ public class BabyCornXMLStudentTest {
 		
 		assertEquals(subjects, students.subjects);
 		
+		System.out.println("===Static test===");
 		
+		System.out.println("Static name "+Students.nameStatic);
+		
+		assertEquals("Foo Bar", Students.nameStatic);
 	}
 }
