@@ -50,26 +50,52 @@ import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory.FactoryType;
 
 public class BabyCornXML {
 	
+	private static boolean isTracesEnabled ;
+	
+	static
+	{
+		initialiseBabyCornXML();
+	}
+	
+	private static void initialiseBabyCornXML()
+	{
+		try
+		{
+			// set system property babyCornXML.enableTraces without a value or with value "true" (case-insensitive).
+			String babyCornXMLEnableTraces =System.getProperty("babyCornXML.enableTraces");
+			if(babyCornXMLEnableTraces!=null)
+			{
+				isTracesEnabled = Boolean.parseBoolean(babyCornXMLEnableTraces);
+			}
+		
+		}catch(Exception ex)
+		{
+			System.err.println("Exception: "+ex);
+			ex.printStackTrace();
+		}
+	}
+	
 	private BabyCornXMLReader babyCornXMLReader;
-	private boolean isTracesEnabled = false;
+	
+	
+	/***
+	 * Constructor will be useful when user want to use only APIs
+	 * @param xmlPath 
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	public BabyCornXML(String xmlPath) throws ParserConfigurationException, SAXException, IOException {
+		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
+		this.babyCornXMLReader.initParser(xmlPath);
+		this.babyCornXMLReader.initXPath();
+	}
 	
 	public BabyCornXML(String xmlPath,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
-		this.babyCornXMLReader.initParser(xmlPath);
-		this.babyCornXMLReader.initXPath();
-		buildAnnotatedObject(object);
+		this(xmlPath,object,BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT));
 	}
 	
-	public BabyCornXML(String xmlPath,Object object,boolean enableTraces) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-		isTracesEnabled=enableTraces;
-		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
-		this.babyCornXMLReader.initParser(xmlPath);
-		this.babyCornXMLReader.initXPath();
-		buildAnnotatedObject(object);
-	}
-	
-	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader,boolean enableTraces) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-		isTracesEnabled=enableTraces;
+	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 		this.babyCornXMLReader = babyCornXMLReader;
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
@@ -393,14 +419,9 @@ public class BabyCornXML {
 	    }
 	}
 	
-	private void enableTraces()
-	{
-		this.isTracesEnabled= true;
-	}
-
 	private void printTraces(String string)
 	{
-		if(isTracesEnabled)
+		if(BabyCornXML.isTracesEnabled)
 			System.out.println("TRACE: "+string);
 	}
 	
