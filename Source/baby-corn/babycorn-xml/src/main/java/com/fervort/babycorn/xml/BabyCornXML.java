@@ -85,17 +85,17 @@ public class BabyCornXML {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	public BabyCornXML(String xmlPath) throws ParserConfigurationException, SAXException, IOException {
+	public BabyCornXML(String xmlPath) throws Exception {
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
 	}
 	
-	public BabyCornXML(String xmlPath,Object object) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+	public BabyCornXML(String xmlPath,Object object) throws Exception {
 		this(xmlPath,object,BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT));
 	}
 	
-	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader) throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader) throws Exception {
 		this.babyCornXMLReader = babyCornXMLReader;
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();

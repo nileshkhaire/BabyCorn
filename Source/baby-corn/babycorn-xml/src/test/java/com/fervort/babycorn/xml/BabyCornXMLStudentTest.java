@@ -22,7 +22,7 @@ public class BabyCornXMLStudentTest {
 	
 	@DisplayName("Test Students.xml")
 	@Test 
-	void testBabyCornXML() throws IllegalArgumentException, IllegalAccessException, XPathExpressionException, ParserConfigurationException, SAXException, IOException
+	void testBabyCornXML() throws Exception
 	{
 		
 		

@@ -20,7 +20,7 @@ public class BabyCornXMLAPITest {
 	
 	@DisplayName("Test Students.xml")
 	@Test 
-	public void testAPIs() throws ParserConfigurationException, SAXException, IOException
+	public void testAPIs() throws Exception
 	{
 		BabyCornXML babyCornXML = new BabyCornXML(filePath);
 		
