@@ -47,6 +47,7 @@ import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReader;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory.FactoryType;
+import com.fervort.babycorn.xml.validator.ValidationHandler;
 
 public class BabyCornXML {
 	
@@ -219,6 +220,13 @@ public class BabyCornXML {
 		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+stringValue);
 		currentField.set(object, stringValue);
+		ValidationHandler vali = new ValidationHandler();
+		try {
+			vali.handleFieldValidation(object, currentField,stringValue);
+		} catch (NoSuchMethodException | SecurityException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
