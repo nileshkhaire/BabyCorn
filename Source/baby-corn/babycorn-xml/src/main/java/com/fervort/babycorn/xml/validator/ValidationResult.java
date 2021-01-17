@@ -59,4 +59,12 @@ public class ValidationResult {
 	public void setSeverity(SEVERITY severity) {
 		this.severity = severity;
 	}
+
+	@Override
+	public String toString() {
+		return "ValidationResult [isValid=" + isValid + ", ifInvalidValue=" + ifInvalidValue + ", ifValidValue="
+				+ ifValidValue + ", ifInvalidMessage=" + ifInvalidMessage + ", ifValidMessage=" + ifValidMessage
+				+ ", severity=" + severity + "]";
+	}
+	
 }

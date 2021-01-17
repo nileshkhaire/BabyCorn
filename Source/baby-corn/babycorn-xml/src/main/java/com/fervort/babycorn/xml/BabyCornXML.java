@@ -48,6 +48,8 @@ import com.fervort.babycorn.xml.reader.BabyCornXMLReader;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReaderFactory.FactoryType;
 import com.fervort.babycorn.xml.validator.ValidationHandler;
+import com.fervort.babycorn.xml.validator.ValidationResult;
+import com.fervort.babycorn.xml.validator.Validator;
 
 public class BabyCornXML {
 	
@@ -77,7 +79,7 @@ public class BabyCornXML {
 	}
 	
 	private BabyCornXMLReader babyCornXMLReader;
-	
+	private ValidationHandler validationHandler;
 	
 	/***
 	 * Constructor will be useful when user want to use only APIs
@@ -100,6 +102,7 @@ public class BabyCornXML {
 		this.babyCornXMLReader = babyCornXMLReader;
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
+		this.validationHandler = new ValidationHandler();
 		buildAnnotatedObject(object);
 	}
 		
@@ -219,14 +222,18 @@ public class BabyCornXML {
 	{
 		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+stringValue);
-		currentField.set(object, stringValue);
-		ValidationHandler vali = new ValidationHandler();
-		try {
-			vali.handleFieldValidation(object, currentField,stringValue);
-		} catch (NoSuchMethodException | SecurityException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, stringValue);
+		if(validationResult.isValid())
+		{
+			currentField.set(object, stringValue);
+		}else
+		{
+			String ifInvalidValue = (String) validationResult.getIfInvalidValue();
+			
+			if(ifInvalidValue!=null)
+				currentField.set(object,ifInvalidValue );
 		}
+
 	}
 	private void processDoubleField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
@@ -489,5 +496,10 @@ public class BabyCornXML {
 	public Double evaluateXPathToNumber(Object object,String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNumber(object, inputPath);
+	}
+	
+	public Validator getValidator()
+	{
+		return this.validationHandler.getValidator();
 	}
 }

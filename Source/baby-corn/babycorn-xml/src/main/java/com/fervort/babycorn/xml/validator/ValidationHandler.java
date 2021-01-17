@@ -27,8 +27,20 @@ import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
 
 public class ValidationHandler {
 
+	private Validator validator=null;
 	
-	public void handleFieldValidation(Object object,Field field,Object currentFieldValue) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	public ValidationHandler()
+	{
+		this.validator= new Validator();
+	}
+	
+	public Validator getValidator()
+	{
+		return this.validator;
+	}
+	
+	// TODO: Should we throw exception, instead of catching here ? 
+	public ValidationResult handleFieldValidation(Object object,Field field,Object currentFieldValue) //throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		Annotation annotation = field.getAnnotation(BabyCornXMLField.class);
 		if(annotation instanceof BabyCornXMLField)
@@ -39,13 +51,23 @@ public class ValidationHandler {
 			{
 				@SuppressWarnings("rawtypes")
 				Class clazz = object.getClass();
-
-				@SuppressWarnings("unchecked")
-				Method method = clazz.getMethod(validateMethod, Field.class,Object.class);
-				boolean result =(boolean) method.invoke(object, field,currentFieldValue);
 				
-				System.out.println("Return result "+result);
+				try
+				{
+					@SuppressWarnings("unchecked")
+					Method method = clazz.getMethod(validateMethod, Field.class,Object.class);
+					ValidationResult validationResult = (ValidationResult) method.invoke(object, field,currentFieldValue);
+					validator.addValidationResult(field.getName(), validationResult);
+					return validationResult;
+				}
+				catch(Exception ex)
+				{
+					System.err.println("Error: "+ex);
+					ex.printStackTrace();
+				}
 			}
 		}
+		
+		return new ValidationResult(false);
 	}
 }
