@@ -57,6 +57,10 @@ public class ValidationHandler {
 					@SuppressWarnings("unchecked")
 					Method method = clazz.getMethod(validateMethod, Field.class,Object.class);
 					ValidationResult validationResult = (ValidationResult) method.invoke(object, field,currentFieldValue);
+					if(validationResult.getFieldName()==null)
+					{
+						validationResult.setFieldName(field.getName());
+					}
 					validator.addValidationResult(field.getName(), validationResult);
 					return validationResult;
 				}
@@ -68,6 +72,6 @@ public class ValidationHandler {
 			}
 		}
 		
-		return new ValidationResult(false);
+		return null;
 	}
 }

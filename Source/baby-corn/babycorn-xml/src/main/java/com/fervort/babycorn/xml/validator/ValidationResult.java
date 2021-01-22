@@ -3,6 +3,7 @@ package com.fervort.babycorn.xml.validator;
 public class ValidationResult {
 	
 	private boolean isValid= false;
+	private String fieldName;
 	private Object ifInvalidValue;
 	private Object ifValidValue;
 	private String ifInvalidMessage;
@@ -13,6 +14,14 @@ public class ValidationResult {
 	public ValidationResult(boolean isValid)
 	{
 		this.isValid= isValid;
+	}
+	
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
 	}
 	
 	public boolean isValid()

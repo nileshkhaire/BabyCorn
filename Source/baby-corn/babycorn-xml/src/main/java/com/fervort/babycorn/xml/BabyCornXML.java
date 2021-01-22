@@ -223,7 +223,8 @@ public class BabyCornXML {
 		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting string on "+currentField.getName()+" Value: "+stringValue);
 		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, stringValue);
-		if(validationResult.isValid())
+		
+		if(validationResult==null || validationResult.isValid())
 		{
 			currentField.set(object, stringValue);
 		}else
@@ -239,69 +240,132 @@ public class BabyCornXML {
 	{
 		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting double on "+currentField.getName()+" Value: "+doubleValue);
-		if(!doubleValue.isNaN())
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, doubleValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			currentField.set(object, doubleValue);
+			if(!doubleValue.isNaN())
+			{
+				currentField.set(object, doubleValue);
+			}
+		}else
+		{
+			double ifInvalidValue = (double) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
 	}
 	private void processIntegerField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
 		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting integer on "+currentField.getName()+" Value: "+doubleValue);
-		if(!doubleValue.isNaN())
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, doubleValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			int intValue = doubleValue.intValue();
-			currentField.set(object, intValue);
+			if(!doubleValue.isNaN())
+			{
+				int intValue = doubleValue.intValue();
+				currentField.set(object, intValue);
+			}
+		}else
+		{
+			int ifInvalidValue = (int) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
 	}
 	private void processShortField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting short on "+currentField.getName()+" Value: "+doubleValue);
-		if(!doubleValue.isNaN())
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, doubleValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			short shortValue = doubleValue.shortValue();
-			currentField.set(object, shortValue);
+			if(!doubleValue.isNaN())
+			{
+				short shortValue = doubleValue.shortValue();
+				currentField.set(object, shortValue);
+			}
+		}else
+		{
+			short ifInvalidValue = (short) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
 	}
 	private void processFloatField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting float on "+currentField.getName()+" Value: "+doubleValue);
-		if(!doubleValue.isNaN())
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, doubleValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			float floatValue = doubleValue.floatValue();
-			currentField.set(object, floatValue);
+			if(!doubleValue.isNaN())
+			{
+				float floatValue = doubleValue.floatValue();
+				currentField.set(object, floatValue);
+			}
+		}else
+		{
+			float ifInvalidValue = (float) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
 	}
 	private void processLongField(Node node, Object object, Field currentField, BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException {
 		Double doubleValue = evaluateXPathToNumber(node,babyCornXMLField.xPath());
 		printTraces("Setting Long on "+currentField.getName()+" Value: "+doubleValue);
-		if(!doubleValue.isNaN())
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, doubleValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			long longValue = doubleValue.longValue();
-			currentField.set(object, longValue);
+			if(!doubleValue.isNaN())
+			{
+				long longValue = doubleValue.longValue();
+				currentField.set(object, longValue);
+			}
+		}else
+		{
+			long ifInvalidValue = (long) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
 	}
 	private void processBooleanField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
 		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting boolean on "+currentField.getName()+" Value: "+stringValue);
-		boolean boolValue = false;
-		if(stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("yes"))
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, stringValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			boolValue = true;
+			boolean boolValue = false;
+			if(stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("yes"))
+			{
+				boolValue = true;
+			}
+			currentField.set(object, boolValue);
+		}else
+		{
+			boolean ifInvalidValue = (boolean) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
-		currentField.set(object, boolValue);
 	}
 	private void processCharacterField(Node node,Object object,Field currentField,BabyCornXMLField babyCornXMLField) throws XPathExpressionException, IllegalArgumentException, IllegalAccessException
 	{
 		String stringValue = evaluateXPathToString(node,babyCornXMLField.xPath());
 		printTraces("Setting character on "+currentField.getName()+" Value: "+stringValue);
-		char charValue = 0 ;
-		if(stringValue.length()>=1)
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, stringValue);
+		if(validationResult==null || validationResult.isValid())
 		{
-			charValue = stringValue.charAt(0);
+			char charValue = '\u0000' ;
+			if(stringValue.length()>=1)
+			{
+				charValue = stringValue.charAt(0);
+			}
+			currentField.set(object, charValue);
+		}else
+		{
+			char ifInvalidValue = (char) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
 		}
-		currentField.set(object, charValue);
 	}
 	
 	@SuppressWarnings("unchecked")

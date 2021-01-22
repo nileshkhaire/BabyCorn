@@ -50,6 +50,11 @@ public class Validator {
 		return false;
 	}
 	
+	public ValidationResult getValidationResult(String fieldName) 
+	{
+		return validationList.get(fieldName);
+	}
+	
 	public void addValidationResult(String fieldName,ValidationResult validationResult) 
 	{
 		validationList.put(fieldName, validationResult);
