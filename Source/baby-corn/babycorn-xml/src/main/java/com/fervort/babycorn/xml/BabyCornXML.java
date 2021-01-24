@@ -20,7 +20,6 @@ package com.fervort.babycorn.xml;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -33,8 +32,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Attr;
@@ -406,7 +403,17 @@ public class BabyCornXML {
             map.put(keyValue, valueValue);
             
 		}
-		currentField.set(object, map);
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, map);
+		
+		if(validationResult==null || validationResult.isValid())
+		{
+			currentField.set(object, map);
+		}else
+		{
+			@SuppressWarnings("rawtypes")
+			Map ifInvalidValue = (Map) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -438,7 +445,18 @@ public class BabyCornXML {
             list.add(valueValue);
             
 		}
-		currentField.set(object, list);
+		
+		ValidationResult validationResult = validationHandler.handleFieldValidation(object, currentField, list);
+		
+		if(validationResult==null || validationResult.isValid())
+		{
+			currentField.set(object, list);
+		}else
+		{
+			@SuppressWarnings("rawtypes")
+			List ifInvalidValue = (List) validationResult.getIfInvalidValue();
+			currentField.set(object,ifInvalidValue );
+		}
 	}
 	
 	private Type[] getFieldParameterizedType(Field field)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employees>
+	<employee>
+		<name></name><!-- Name kept blank intentionally -->
+		<department>Human Resource</department>
+		<SalaryGroup>b</SalaryGroup>
+		<id>11</id>
+		<BonusPercentage>123</BonusPercentage>
+		<IsInsured>-1</IsInsured>
+		<secretKeyNumber>922337203685477</secretKeyNumber>
+		<points>63.9873333</points>
+		<projects>
+			<project id="prj347">Data Simulation</project>
+			<project id="prj204">Warehouse Automation</project>
+			<project id="srp129">Finance Tools</project>
+		</projects>
+		<resources>
+			<resource>Cell Phone</resource>
+			<resource>Laptop</resource>
+			<resource>Car</resource>
+		</resources>
+	</employee>
+</employees>	

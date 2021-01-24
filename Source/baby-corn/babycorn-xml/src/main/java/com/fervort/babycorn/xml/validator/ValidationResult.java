@@ -71,7 +71,7 @@ public class ValidationResult {
 
 	@Override
 	public String toString() {
-		return "ValidationResult [isValid=" + isValid + ", ifInvalidValue=" + ifInvalidValue + ", ifValidValue="
+		return "ValidationResult [fieldName=" + fieldName +", isValid=" + isValid + ", ifInvalidValue=" + ifInvalidValue + ", ifValidValue="
 				+ ifValidValue + ", ifInvalidMessage=" + ifInvalidMessage + ", ifValidMessage=" + ifValidMessage
 				+ ", severity=" + severity + "]";
 	}

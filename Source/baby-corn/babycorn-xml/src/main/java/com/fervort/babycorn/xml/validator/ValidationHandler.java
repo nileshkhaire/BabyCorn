@@ -20,7 +20,6 @@ package com.fervort.babycorn.xml.validator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
