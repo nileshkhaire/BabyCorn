@@ -152,7 +152,7 @@ public class Employees {
 }
 
 ```
-1. Write a validation method `validateEmployeeName` in class Emplyees. Method should have 2 parameters as written below.
+2. Write a validation method `validateEmployeeName` in class Emplyees. Method should have 2 parameters as written below.
 ```java
 public ValidationResult validateEmployeeName(Field field, Object object)
 {
@@ -170,7 +170,7 @@ public ValidationResult validateEmployeeName(Field field, Object object)
 	return result;
 }
 ```
-1. You can get result of validation using BabyCorn XML APIs
+3. You can get result of validation using BabyCorn XML APIs
 ```java
 	Employees employees = new Employees();
 	BabyCornXML babyCornXML = new BabyCornXML("Employees.xml",employees);
@@ -182,5 +182,22 @@ Check complete example here [Employees.java](https://github.com/nileshkhaire/Bab
 
 > Note : For field type `String,Char,Boolean` 2nd method parameter `object` could be cast to `String` and for `Double,float,Long` parameters `object` could be cast to `Double` before using. Return value `setIfInvalidValue(returnValue)` should be same as type of the field.
 
+### Validator to pre process the field values:
+Validator can be used to pre process the value. For example: In Employees.java example, if department is not a `IT,Finance or Manufacturing` then `UNKNOWN_DEPARTMENT` will be set on the field.
+```java
+public ValidationResult validateDepartment(Field field, Object object)
+{
+	String[] departments = {"IT","Finance","Manufacturing"};
+	
+	String departmentFromXML = (String)object;
+	ValidationResult result = new ValidationResult(true);
+	if(!Arrays.asList(departments).contains(departmentFromXML))
+	{
+		result = new ValidationResult(false);
+		result.setIfInvalidValue("UNKNOWN_DEPARTMENT");
+	}
+	return result;
+} 
+```
 ## BabyCorn XML APIs:
 WIP
