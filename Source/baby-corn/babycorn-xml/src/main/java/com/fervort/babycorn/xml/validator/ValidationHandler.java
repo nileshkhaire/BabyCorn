@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
+import com.fervort.babycorn.xml.annotation.BabyCornXMLValidation;
 
 public class ValidationHandler {
 
@@ -41,11 +42,11 @@ public class ValidationHandler {
 	// TODO: Should we throw exception, instead of catching here ? 
 	public ValidationResult handleFieldValidation(Object object,Field field,Object currentFieldValue) //throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
-		Annotation annotation = field.getAnnotation(BabyCornXMLField.class);
-		if(annotation instanceof BabyCornXMLField)
+		Annotation annotation = field.getAnnotation(BabyCornXMLValidation.class);
+		if(annotation instanceof BabyCornXMLValidation)
 		{
-			BabyCornXMLField babyCornXMLField =(BabyCornXMLField)annotation;
-			String validateMethod = babyCornXMLField.validationMethod();
+			BabyCornXMLValidation babyCornXMLValidation =(BabyCornXMLValidation)annotation;
+			String validateMethod = babyCornXMLValidation.validationMethod();
 			if(!validateMethod.equals("[unassigned]"))
 			{
 				@SuppressWarnings("rawtypes")

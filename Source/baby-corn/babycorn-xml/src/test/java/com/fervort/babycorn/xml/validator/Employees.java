@@ -8,31 +8,40 @@ import java.util.List;
 import java.util.Map;
 
 import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
+import com.fervort.babycorn.xml.annotation.BabyCornXMLValidation;
 
 public class Employees {
 
-	@BabyCornXMLField(xPath = "employees/employee/name" , validationMethod ="validateName")
+	@BabyCornXMLValidation(validationMethod = "validateName")
+	@BabyCornXMLField(xPath = "employees/employee/name")
 	public String name;
 	
-	@BabyCornXMLField(xPath = "employees/employee/department",validationMethod = "validateDepartment")
+	@BabyCornXMLValidation(validationMethod = "validateDepartment")
+	@BabyCornXMLField(xPath = "employees/employee/department")
 	public String department;
 	
-	@BabyCornXMLField(xPath = "employees/employee/BonusPercentage", validationMethod = "validateBonusPercentage")
+	@BabyCornXMLValidation(validationMethod = "validateBonusPercentage")
+	@BabyCornXMLField(xPath = "employees/employee/BonusPercentage")
 	public Float bonusPercentage;
 	
-	@BabyCornXMLField(xPath = "employees/employee/SalaryGroup", validationMethod = "validateSalaryGroup")
+	@BabyCornXMLValidation(validationMethod = "validateSalaryGroup")
+	@BabyCornXMLField(xPath = "employees/employee/SalaryGroup")
 	public char salaryGroup;
 	
-	@BabyCornXMLField(xPath = "employees/employee/id", validationMethod = "validateEmployeeID")
+	@BabyCornXMLValidation(validationMethod = "validateEmployeeID")
+	@BabyCornXMLField(xPath = "employees/employee/id")
 	public int empID;
 	
-	@BabyCornXMLField(xPath = "employees/employee/IsInsured", validationMethod = "validateIsInsuredField")
+	@BabyCornXMLValidation(validationMethod = "validateIsInsuredField")
+	@BabyCornXMLField(xPath = "employees/employee/IsInsured")
 	public boolean isInsured;
 	
-	@BabyCornXMLField(xPath = "employees/employee/projects/project", mapKey = "@id",mapValue = "text()", validationMethod ="validateProjects")
+	@BabyCornXMLValidation(validationMethod = "validateProjects")
+	@BabyCornXMLField(xPath = "employees/employee/projects/project", mapKey = "@id",mapValue = "text()")
 	public Map<String,String> projects = new HashMap();
 
-	@BabyCornXMLField(xPath = "employees/employee/resources/resource", listValue = "text()",validationMethod = "validateResources")
+	@BabyCornXMLValidation(validationMethod = "validateResources")
+	@BabyCornXMLField(xPath = "employees/employee/resources/resource", listValue = "text()")
 	public List<String> resources = new ArrayList();
 	
 	public ValidationResult validateName(Field field, Object object)

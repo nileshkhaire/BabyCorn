@@ -32,5 +32,4 @@ public @interface BabyCornXMLField {
 	String mapValue() default "[unassigned]";
 	String listValue() default "[unassigned]";
     String name() default "[unassigned]";
-    String validationMethod() default "[unassigned]";
 }
