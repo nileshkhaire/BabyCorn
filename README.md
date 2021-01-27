@@ -137,7 +137,50 @@ Subjects {English=Def Xyz, Science=Abc Pqr, Mathematics=Lmn Opq}
 ```
 
 ## Validator & Pre processor :
-WIP
+Anything can be written in a XML file that can cause a program failure. To avoid such scenarios, validator can be used. You can write your own validator or use built in validators.
+
+### Writing custom validator:
+You can write your own validators. Here are simple steps:
+1. Add `@BabyCornXMLValidation(validationMethod = "validateEmployeeName")` annotation on the field. Here `validateEmployeeName` is a java method, where validation code will be written.
+```java
+public class Employees {
+	
+	@BabyCornXMLValidation(validationMethod = "validateEmployeeName")
+	@BabyCornXMLField(xPath = "employees/employee/name")
+	public String name;
+
+}
+
+```
+1. Write a validation method `validateEmployeeName` in class Emplyees. Method should have 2 parameters as written below.
+```java
+public ValidationResult validateEmployeeName(Field field, Object object)
+{
+	String nameFromXML = (String)object;
+	ValidationResult result = new ValidationResult(true);
+	if(nameFromXML.trim().isEmpty())
+	{
+		result = new ValidationResult(false);
+		result.setIfInvalidMessage("Name in XML is empty");
+		result.setSeverity(ValidationResult.SEVERITY.STOP);
+		// You can use SEVERITY.CONTINUE to continue with the execution
+		//result.setSeverity(ValidationResult.SEVERITY.CONTINUE);
+		
+	}
+	return result;
+}
+```
+1. You can get result of validation using BabyCorn XML APIs
+```java
+	Employees employees = new Employees();
+	BabyCornXML babyCornXML = new BabyCornXML("Employees.xml",employees);
+	Validator validator =babyCornXML.getValidator();
+	validator.getValidationList();
+	System.out.println("validation list "+validator);
+```
+Check complete example here [Employees.java](https://github.com/nileshkhaire/BabyCorn/blob/main/Source/baby-corn/babycorn-xml/src/test/java/com/fervort/babycorn/xml/validator/Employees.java)
+
+> Note : For field type `String,Char,Boolean` 2nd method parameter `object` could be cast to `String` and for `Double,float,Long` parameters `object` could be cast to `Double` before using. Return value `setIfInvalidValue(returnValue)` should be same as type of the field.
 
 ## BabyCorn XML APIs:
 WIP
