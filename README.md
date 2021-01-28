@@ -136,6 +136,86 @@ Hobbies [Singing, Reading, Yoga]
 Subjects {English=Def Xyz, Science=Abc Pqr, Mathematics=Lmn Opq}
 ```
 
+## Handling multiple nodes :
+If there are multiple nodes/records in the XML, you can create 2 classes, 1 for holding list of records and other one for holding fields. For example: 
+
+### XML with multiple nodes:
+```xml
+<teachers>
+	<teacher>
+		<name>Abc</name>
+		<tid>101</tid>
+		<department>Art</department>
+	</teacher>
+	<teacher>
+		<name>Pqr</name>
+		<tid>102</tid>
+		<department>Science</department>
+	</teacher>
+	<teacher>
+		<name>Xyz</name>
+		<tid>103</tid>
+		<department>Commerce</department>
+	</teacher>
+</teachers>
+```
+
+### Class to hold list of teachers:
+```java
+public class Teachers {
+
+	// Note Xpath, it is teachers/teacher
+	@BabyCornXMLField(xPath = "teachers/teacher")
+	List<Teacher> teacherList = new ArrayList<Teacher>();
+}
+```
+### Class to hold teacher fields:
+```java
+public class Teacher {
+
+	// Note Xpath, it is only name, excluding teachers/teacher
+	@BabyCornXMLField(xPath = "name")
+	public String name;
+	
+	@BabyCornXMLField(xPath = "tid")
+	public int tid;
+	
+	@BabyCornXMLField(xPath = "department")
+	public String department;
+}
+```
+### Get list of teachers and fields:
+```java
+public static void main(String[] args) throws Exception {
+
+	Teachers teachers = new Teachers();
+	BabyCornXML babyCornXML = new BabyCornXML("Teachers.xml",teachers);
+	
+	// Iterate through each teacher
+	for(Teacher teacher: teachers.teacherList)
+	{
+		System.out.println("name: "+teacher.name);
+		System.out.println("teacher id: "+teacher.tid);
+		System.out.println("department: "+teacher.department);
+		System.out.println("");
+	}
+```
+### Output :
+
+```bash
+name: Abc
+teacher id: 101
+department: Art
+
+name: Pqr
+teacher id: 102
+department: Science
+
+name: Xyz
+teacher id: 103
+department: Commerce
+```
+
 ## Validator & Pre processor :
 Anything can be written in a XML file that can cause a program failure. To avoid such scenarios, validator can be used. You can write your own validator or use built in validators.
 
