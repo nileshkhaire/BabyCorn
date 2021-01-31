@@ -18,7 +18,6 @@ limitations under the License.
 
 package com.fervort.babycorn.xml;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -31,14 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
 import com.fervort.babycorn.xml.reader.BabyCornXMLReader;
@@ -79,21 +76,76 @@ public class BabyCornXML {
 	private ValidationHandler validationHandler;
 	
 	/***
-	 * Constructor will be useful when user want to use only APIs
-	 * @param xmlPath 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
+	 * This constructor will be used, when user want to use only BabyCorn XML APIs.
+	 * 
+	 * <p>Example: 
+	 * <pre>
+	 * 
+	 * 	BabyCornXML babyCornXML = new BabyCornXML(filePath);
+	 *  
+	 *	Document doc= babyCornXML.getDocumentRoot();
+	 *
+	 * 	NodeList nodeList = doc.getElementsByTagName("lastYearGrade");  
+	 *	
+	 *	Node node = nodeList.item(0);
+	 *
+	 *	System.out.println("lastYearGrade:" + node.getTextContent());
+	 *
+	 * </pre>
+	 * @param xmlPath XML file path
+	 * @throws Exception Could throw following inner exceptions: ParserConfigurationException, SAXException, IOException
 	 */
-	public BabyCornXML(String xmlPath) throws Exception {
+	public BabyCornXML(String xmlPath) throws Exception  {
 		this.babyCornXMLReader = BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT);
 		this.babyCornXMLReader.initParser(xmlPath);
 		this.babyCornXMLReader.initXPath();
 	}
 	
-	public BabyCornXML(String xmlPath,Object object) throws Exception {
+	/**
+	 *	Constructor to pass XML file path and field class which is annotated with XPath annotations.
+	 *
+	 *	<p>Check this Example:
+	 * 
+	 *<pre>
+	 *
+	 *	Students students = new Students();
+	 *
+	 *	BabyCornXML babyCornXML = new BabyCornXML("Students.xml",students);
+	 *
+	 *	System.out.println("Name: "+students.name);
+	 *
+	 *</pre> 
+	 * 
+	 * @param xmlPath Path of XML file
+	 * @param object Object of field class where fields are defined and annotated.
+	 * @throws Exception Could throw following inner exceptions: IllegalArgumentException, IllegalAccessException, XPathExpressionException, IOException, SAXException, ParserConfigurationException
+	 */
+	public BabyCornXML(String xmlPath,Object object) throws Exception  {
 		this(xmlPath,object,BabyCornXMLReaderFactory.getXMLReader(FactoryType.DEFAULT));
 	}
+	
+	/**
+	 *	Constructor to pass XML file path and field class which is annotated with XPath annotations.
+	 *
+	 *	<p>Check this Example:
+	 * 
+	 *<pre>
+	 *
+	 *	Students students = new Students();
+	 *
+	 *	BabyCornXMLReader reader = new MyCustomReaderImpl();	
+	 *
+	 *	BabyCornXML babyCornXML = new BabyCornXML("Students.xml",students,reader);
+	 *
+	 *	System.out.println("Name: "+students.name);
+	 *
+	 *</pre> 
+	 * 
+	 * @param xmlPath Path of XML file
+	 * @param object Object of field class where fields are defined and annotated.
+	 * @param babyCornXMLReader Custom babyCornXMLReader, This custom reader should implement interface BabyCornXMLReader.java
+	 * @throws Exception Could throw following inner exceptions: IllegalArgumentException, IllegalAccessException, XPathExpressionException, IOException, SAXException, ParserConfigurationException
+	 */
 	
 	public BabyCornXML(String xmlPath,Object object,BabyCornXMLReader babyCornXMLReader) throws Exception {
 		this.babyCornXMLReader = babyCornXMLReader;
@@ -522,64 +574,164 @@ public class BabyCornXML {
 			System.out.println("TRACE: "+string);
 	}
 	
-	/***
-	 * Exposed methods for user
+	// Exposed methods for user
+	
+	/**
+	 *	Get root of the document org.w3c.dom.Document .
+	 * 
+	 *	<p>Using this document root user can perform all XML DOM operations.
+	 * 
+	 * @return Root of the document.
 	 */
 	public Document getDocumentRoot()
 	{
 		return this.babyCornXMLReader.getDocumentRoot();
 	}
 	
+	/**
+	 * Evaluate XPath to type, which has been passed in the 2nd parameter.
+	 * 
+	 * @param inputPath Input XPath
+	 * @param qName Desired return type. For example: XPathConstants.NODESET
+	 * @return Result of evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Object evaluateXPath(String inputPath,QName qName) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPath(inputPath,qName);
 	}
 	
+	/**
+	 * Evaluate XPath to type, which has been passed in the 3rd parameter.
+	 * 
+	 * @param object Object on which XPath will be evaluated. It could be DOM Document,Node or NodeSet.
+	 * @param inputPath Input XPath
+	 * @param qName Desired return type. For example: XPathConstants.NODESET
+	 * @return Result of evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Object evaluateXPath(Object object,String inputPath,QName qName) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPath(object, inputPath,qName);
 	}
 	
+	/**
+	 * Evaluate XPath to String
+	 * 
+	 * @param inputPath Input XPath
+	 * @return String after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public String evaluateXPathToString(String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToString(inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to String
+	 * 
+	 * @param object Object on which XPath will be evaluated. It could be DOM Document,Node or NodeSet.
+	 * @param inputPath Input XPath
+	 * @return String after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public String evaluateXPathToString(Object object,String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToString(object, inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to NodeList.
+	 * 
+	 * @param inputPath Input XPath
+	 * @return NodeList after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public NodeList evaluateXPathToNodeList(String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNodeList(inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to NodeList.
+	 * 
+	 * @param object Object on which XPath will be evaluated. It could be DOM Document,Node or NodeSet.
+	 * @param inputPath Input XPath
+	 * @return NodeList after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public NodeList evaluateXPathToNodeList(Object object,String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNodeList(object, inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to Node.
+	 * 
+	 * @param inputPath Input XPath
+	 * @return Node after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Node evaluateXPathToNode(String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNode(inputPath);
 	}
-	
+	/**
+	 * Evaluate XPath to Node.
+	 * 
+	 * @param object Object on which XPath will be evaluated. It could be DOM Document,Node or NodeSet.
+	 * @param inputPath Input XPath
+	 * @return Node after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Node evaluateXPathToNode(Object object,String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNode(object, inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to number.
+	 * 
+	 * @param inputPath Input XPath
+	 * @return Double after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Double evaluateXPathToNumber(String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNumber(inputPath);
 	}
 	
+	/**
+	 * Evaluate XPath to number.
+	 * 
+	 * @param object Object on which XPath will be evaluated. It could be DOM Document,Node or NodeSet.
+	 * @param inputPath Input XPath
+	 * @return Double after evaluation.
+	 * @throws XPathExpressionException throws XPathExpressionException
+	 */
 	public Double evaluateXPathToNumber(Object object,String inputPath) throws XPathExpressionException
 	{
 		return this.babyCornXMLReader.evaluateXPathToNumber(object, inputPath);
 	}
 	
+	/**
+	 * Get instance of Validator class.
+	 * 
+	 * <p>Check Validator.java documentation for usage.
+	 * 
+	 * <p>Example: 
+	 * 
+	 * <pre>
+	 * 
+	 *	Validator validator = babyCorn.getValidator();
+	 *
+	 *	List list = validator.getValidationList();
+	 *	
+	 *	// Iterate through list
+	 *
+	 * </pre>
+	 * @return Return instance of Validator.
+	 */
 	public Validator getValidator()
 	{
 		return this.validationHandler.getValidator();
