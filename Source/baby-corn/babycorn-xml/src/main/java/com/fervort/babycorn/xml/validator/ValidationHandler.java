@@ -25,6 +25,11 @@ import java.lang.reflect.Method;
 import com.fervort.babycorn.xml.annotation.BabyCornXMLField;
 import com.fervort.babycorn.xml.annotation.BabyCornXMLValidation;
 
+/**
+ * This class used internally to handle validations.
+ * @author Nilesh Khaire
+ *
+ */
 public class ValidationHandler {
 
 	private Validator validator=null;

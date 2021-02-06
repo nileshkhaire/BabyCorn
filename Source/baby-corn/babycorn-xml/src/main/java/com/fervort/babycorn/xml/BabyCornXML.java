@@ -45,6 +45,12 @@ import com.fervort.babycorn.xml.validator.ValidationHandler;
 import com.fervort.babycorn.xml.validator.ValidationResult;
 import com.fervort.babycorn.xml.validator.Validator;
 
+/**
+ * This class is used to set/inject values on fields of the java class which is passed in the constructor and annotated using BabyCornXMLField.java
+ * <p>Check documentation of constructor to know how to used it. 
+ * @author Nilesh Khaire
+ *
+ */
 public class BabyCornXML {
 	
 	private static boolean isTracesEnabled ;
