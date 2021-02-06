@@ -280,4 +280,19 @@ public ValidationResult validateDepartment(Field field, Object object)
 } 
 ```
 ## BabyCorn XML APIs:
-WIP
+BabyCorn XML can also be used as XML DOM APIs
+
+```java
+public void testAPIs() throws Exception
+{
+	BabyCornXML babyCornXML = new BabyCornXML("D:\Nilesh\Students.xml");
+		
+	Document doc= babyCornXML.getDocumentRoot();
+		
+	NodeList nodeList = doc.getElementsByTagName("lastYearGrade");  
+		
+	Node node = nodeList.item(0);  
+	
+	System.out.println("lastYearGrade:" + node.getTextContent());
+} 
+```
