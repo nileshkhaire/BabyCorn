@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.fervort.babycorn</groupId>
     <artifactId>baby-corn</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>babycorn-xml</artifactId>
   <name>Baby corn XML library</name>
