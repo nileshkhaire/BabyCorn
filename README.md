@@ -1,7 +1,34 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/baby-corn/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/baby-corn)
+
 # BabyCorn XML
 Short and sweet strongly typed XML reader for JVM.
 
 BabyCorn XML is a library to read XML data into Java data types using XPath selector. 
+
+## Adding BabyCorn XML to your build:
+
+There are multiple options. Select one of the following:
+
+### Download from GitHub releases:
+
+[GitHub Releases](https://github.com/nileshkhaire/BabyCorn/releases)
+
+### To add a dependency using Maven, use the following:
+
+```xml
+<dependency>
+  <groupId>com.fervort.babycorn</groupId>
+  <artifactId>baby-corn</artifactId>
+  <version>1.0.0</version>
+  <type>pom</type>
+</dependency>
+```
+
+### To add a dependency using Gradle:
+
+```gradle
+implementation 'com.fervort.babycorn:baby-corn:1.0.0'
+```
 
 ## How to use : 
 
