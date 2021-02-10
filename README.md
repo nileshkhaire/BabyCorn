@@ -1,9 +1,11 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/baby-corn/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/baby-corn)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/babycorn-xml/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.fervort.babycorn/babycorn-xml)
 
 # BabyCorn XML
 Short and sweet strongly typed XML reader for JVM.
 
 BabyCorn XML is a library to read XML data into Java data types using XPath selector. 
+
+It could be a good configuration library because of in-built features like validator and preprocessor. 
 
 ## Adding BabyCorn XML to your build:
 
@@ -18,23 +20,22 @@ There are multiple options. Select one of the following:
 ```xml
 <dependency>
   <groupId>com.fervort.babycorn</groupId>
-  <artifactId>baby-corn</artifactId>
+  <artifactId>babycorn-xml</artifactId>
   <version>1.0.0</version>
-  <type>pom</type>
 </dependency>
 ```
 
 ### To add a dependency using Gradle:
 
 ```gradle
-implementation 'com.fervort.babycorn:baby-corn:1.0.0'
+implementation 'com.fervort.babycorn:babycorn-xml:1.0.0'
 ```
 
 ## How to use : 
 
 In 3 quick steps: 
 
-1. Download latest library `babycorn-xml-***.jar` and add as a dependency.
+1. Add BabyCorn XML jar to your build as specified in above options.
 2. Create a Java class with fields and annotate it using XPath as per your XML file.
 3. Create an object of a java field class you have created in the last step and pass it to BabyCornXML constructor. All values will be set to field class you have created. That's All!
 
